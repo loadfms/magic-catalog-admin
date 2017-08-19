@@ -97,11 +97,23 @@ class Product extends Component {
         return data;
     }
 
+    saveCategoriesProduct(){
+        axios.post(config.serveraddress + '/categoryproduct/' + this.state.id + '/' + this.state.selectedcategories.join(","))
+            .then(function (response) {
+                console.log
+            }.bind(this))
+            .catch(function (error) {
+                console.log(error);
+            });
+    }
+
     saveData() {
         let data = this.getData();
 
         axios.post(config.serveraddress + '/product', data)
             .then(function (response) {
+                this.setState({id: response.data.rows[0].id})
+                this.saveCategoriesProduct();
                 this.loadData();
                 this.newItem();
             }.bind(this))
@@ -179,6 +191,7 @@ class Product extends Component {
 
         axios.put(config.serveraddress + '/product', data)
             .then(function (response) {
+                this.saveCategoriesProduct();
                 this.loadData();
                 this.newItem();
             }.bind(this))
