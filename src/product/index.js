@@ -22,7 +22,8 @@ class Product extends Component {
             id: undefined,
             uriimage: undefined,
             search: '',
-            filteredlist: []
+            filteredlist: [],
+            cover: false
         }
 
         this.newItem = this.newItem.bind(this);
@@ -35,6 +36,7 @@ class Product extends Component {
         this.setUrlImage = this.setUrlImage.bind(this);
         this.setDescription = this.setDescription.bind(this);
         this.setSearch = this.setSearch.bind(this);
+        this.setCover = this.setCover.bind(this);
     }
 
     componentWillMount() {
@@ -91,7 +93,8 @@ class Product extends Component {
             name: this.state.name,
             description: this.state.description,
             image: this.state.uriimage,
-            status: true
+            status: true,
+            cover: this.state.cover
         }
 
         return data;
@@ -164,6 +167,10 @@ class Product extends Component {
         }
     }
 
+    setCover(e) {
+        this.setState({ cover: e.target.checked });
+    }
+
     setUrlImage(uri) {
         this.setState({
             uriimage: uri
@@ -179,7 +186,7 @@ class Product extends Component {
     }
 
     update(e) {
-        this.setState({ mode: 'update', id: e.target.dataset["id"], name: e.target.dataset["name"], description: e.target.dataset["description"], uriimage: e.target.dataset["uriimage"] }, () => {
+        this.setState({ mode: 'update', id: e.target.dataset["id"], name: e.target.dataset["name"], description: e.target.dataset["description"], uriimage: e.target.dataset["uriimage"], cover: e.target.dataset["cover"] == 'true' }, () => {
             this.selectCategories();
         });
     }
@@ -223,7 +230,7 @@ class Product extends Component {
                                     <td className="mdl-data-table__cell--non-numeric">{object.name}</td>
                                     <td className="mdl-data-table__cell--non-numeric"><i className="mdl-color-text--blue-grey-400 material-icons" role="presentation">{object.status ? 'visibility' : 'visibility_off'}</i></td>
                                     <td className="mdl-data-table__cell--non-numeric">
-                                        <i className="material-icons" data-id={object.id} data-name={object.name} data-description={object.description} data-uriimage={object.image} onClick={_this.update} style={{ cursor: 'pointer' }}>settings</i>
+                                        <i className="material-icons" data-id={object.id} data-name={object.name} data-description={object.description} data-uriimage={object.image} data-cover={object.cover} onClick={_this.update} style={{ cursor: 'pointer' }}>settings</i>
                                         <i className="material-icons" data-id={object.id} onClick={_this.deleteData} style={{ cursor: 'pointer' }}>delete</i>
                                     </td>
                                 </tr>)
@@ -247,13 +254,19 @@ class Product extends Component {
         return (
             <div className="row">
                 <p className="caption">Cadastrando um novo produto....</p>
-
+                <div className="row">
+                    <div className="col s12">
+                        <input type="checkbox" id="chkCover" defaultChecked={this.state.cover} onChange={this.setCover} />
+                        <label htmlFor="chkCover">Capa</label>
+                    </div>
+                </div>
                 <div className="row">
                     <Input s={12} label="Nome" onChange={this.setName} defaultValue={this.state.name} validate />
                 </div>
                 <div className="row">
                     <Input s={12} label="Descrição" onChange={this.setDescription} defaultValue={this.state.description} validate />
                 </div>
+
                 <div className="row">
                     {this.state.categories.map((object, i) => {
                         return (
