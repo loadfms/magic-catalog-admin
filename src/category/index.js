@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import { Input } from 'react-materialize';
 var env = require('./../configs/env.json');
 var config = require('./../configs/config.' + env.current + '.json');
 
@@ -13,19 +14,21 @@ class Category extends Component {
         this.state = {
             categories: [],
             mode: 'list',
-            name: undefined
+            name: '',
+            id: undefined
         }
 
         this.newItem = this.newItem.bind(this);
         this.saveData = this.saveData.bind(this);
         this.setName = this.setName.bind(this);
         this.deleteData = this.deleteData.bind(this);
+        this.updateData = this.updateData.bind(this);
+        this.update = this.update.bind(this);
     }
 
     componentWillMount() {
         this.loadData();
     }
-
 
     loadData() {
         axios.get(config.serveraddress + '/category')
@@ -61,7 +64,8 @@ class Category extends Component {
     }
 
     newItem() {
-        if (this.state.mode == 'list') {
+        this.setState({ id: undefined, name: '' });
+        if (this.state.mode === 'list') {
             this.setState({ mode: 'new' });
         }
         else {
@@ -71,6 +75,21 @@ class Category extends Component {
 
     setName(e) {
         this.setState({ name: e.target.value });
+    }
+
+    update(e) {
+        this.setState({ mode: 'update', id: e.target.dataset["id"], name: e.target.dataset["name"] });
+    }
+
+    updateData() {
+        axios.put(config.serveraddress + '/category', { id: this.state.id, name: this.state.name })
+            .then(function (response) {
+                this.loadData();
+                this.newItem();
+            }.bind(this))
+            .catch(function (error) {
+                console.log(error);
+            });
     }
 
     renderList() {
@@ -91,8 +110,8 @@ class Category extends Component {
                                 <tr key={object.id}>
                                     <td>{object.name}</td>
                                     <td>
-                                        <i className="material-icons">settings</i>
-                                        <i className="material-icons" data-id={object.id} onClick={_this.deleteData} style={{cursor:'pointer'}}>delete</i>
+                                        <i className="material-icons" data-id={object.id} data-name={object.name} onClick={_this.update} style={{ cursor: 'pointer' }}>settings</i>
+                                        <i className="material-icons" data-id={object.id} onClick={_this.deleteData} style={{ cursor: 'pointer' }}>delete</i>
                                     </td>
                                 </tr>)
                         })}
@@ -105,16 +124,13 @@ class Category extends Component {
     renderForm() {
         return (
             <div className="row">
-                <p className="caption">Cadastrando um novo menu.</p>
+                <p className="caption">Cadastrando um novo menu....</p>
 
                 <div className="row">
-                    <div className="input-field col s6">
-                        <input id="last_name" type="text" className="validate" onChange={this.setName} />
-                        <label htmlFor="last_name">Nome</label>
-                    </div>
+                    <Input s={6} label="Nome" onChange={this.setName} defaultValue={this.state.name} validate />
                 </div>
 
-                <a className="waves-effect waves-light btn" onClick={this.saveData}>salvar</a> &nbsp;
+                <a className="waves-effect waves-light btn" onClick={this.state.mode === 'new' ? this.saveData : this.updateData}>salvar</a> &nbsp;
                 <a className="waves-effect waves-light btn" onClick={this.newItem} >cancelar</a>
             </div>
         )
@@ -126,6 +142,10 @@ class Category extends Component {
         }
 
         if (this.state.mode === 'new') {
+            return this.renderForm();
+        }
+
+        if (this.state.mode === 'update') {
             return this.renderForm();
         }
     }
@@ -141,7 +161,7 @@ class Category extends Component {
                         <div className="section">
                             {this.renderMode()}
                         </div>
-                        {(this.state.mode == 'list' ? <a className="btn-floating btn-large waves-effect waves-light blue-grey darken-3 right" onClick={this.newItem}><i className="material-icons">add</i></a> : null)}
+                        {(this.state.mode === 'list' ? <a className="btn-floating btn-large waves-effect waves-light blue-grey darken-3 right" onClick={this.newItem}><i className="material-icons">add</i></a> : null)}
 
                     </div>
                 </main>
