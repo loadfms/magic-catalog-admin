@@ -16,7 +16,7 @@ class ImageUploader extends Component {
     }
 
     handleSubmit(e) {
-        e.preventDefault();
+        //e.preventDefault();
         const _this = this;
 
         this.setState({
@@ -52,6 +52,8 @@ class ImageUploader extends Component {
                 data_uri: upload.target.result,
                 filename: file.name,
                 filetype: file.type
+            },() =>{
+                this.handleSubmit();
             });
         };
 
@@ -78,7 +80,6 @@ class ImageUploader extends Component {
                     <label>Foto do produto</label>
                     <form onSubmit={this.handleSubmit} encType="multipart/form-data">
                         <input type="file" onChange={this.handleFile} />
-                        <input disabled={this.state.processing} className='btn btn-primary' type="submit" value="Enviar" />
                     </form>
                     {uploaded}
                 </div>

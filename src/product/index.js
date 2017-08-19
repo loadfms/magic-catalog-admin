@@ -97,7 +97,7 @@ class Product extends Component {
         return data;
     }
 
-    saveCategoriesProduct(){
+    saveCategoriesProduct() {
         axios.post(config.serveraddress + '/categoryproduct/' + this.state.id + '/' + this.state.selectedcategories.join(","))
             .then(function (response) {
                 console.log
@@ -112,7 +112,7 @@ class Product extends Component {
 
         axios.post(config.serveraddress + '/product', data)
             .then(function (response) {
-                this.setState({id: response.data.rows[0].id})
+                this.setState({ id: response.data.rows[0].id })
                 this.saveCategoriesProduct();
                 this.loadData();
                 this.newItem();
@@ -135,8 +135,8 @@ class Product extends Component {
     }
 
     newItem() {
-        this.setState({ id: undefined, name: '', description: '', uriimage: '', search: '', selectedcategories: [] }, () =>{
-            this.filter();                        
+        this.setState({ id: undefined, name: '', description: '', uriimage: '', search: '', selectedcategories: [] }, () => {
+            this.filter();
         });
         if (this.state.mode === 'list') {
             this.setState({ mode: 'new' });
@@ -255,14 +255,6 @@ class Product extends Component {
                     <Input s={12} label="Descrição" onChange={this.setDescription} defaultValue={this.state.description} validate />
                 </div>
                 <div className="row">
-                    {haveImage}
-                </div>
-                <div className="row">
-                    <div className="col s12">
-                        <ImageUploader onUpload={this.setUrlImage} />
-                    </div>
-                </div>
-                <div className="row">
                     {this.state.categories.map((object, i) => {
                         return (
                             <div className="col s12" key={i}>
@@ -271,6 +263,14 @@ class Product extends Component {
                             </div>
                         )
                     })}
+                </div>
+                <div className="row">
+                    {haveImage}
+                </div>
+                <div className="row">
+                    <div className="col s12">
+                        <ImageUploader onUpload={this.setUrlImage} />
+                    </div>
                 </div>
                 <a className="waves-effect waves-light btn" onClick={this.state.mode === 'new' ? this.saveData : this.updateData}>salvar</a> &nbsp;
                         <a className="waves-effect waves-light btn" onClick={this.newItem} >cancelar</a>
