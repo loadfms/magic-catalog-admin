@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { Input } from 'react-materialize';
 import ImageUploader from './../components/upload/index'
+import { browserHistory } from 'react-router';
+import Cookies from 'universal-cookie';
+
 var env = require('./../configs/env.json');
 var config = require('./../configs/config.' + env.current + '.json');
 
@@ -40,8 +43,20 @@ class Product extends Component {
     }
 
     componentWillMount() {
-        this.loadData();
-        this.loadCategories();
+        const cookies = new Cookies();
+        let hash = cookies.get('user');
+        if (hash) {
+            axios.post(config.serveraddress + '/checklogin', { hash: hash })
+                .then(function (response) {
+                    this.loadData();
+                    this.loadCategories();
+                }.bind(this))
+                .catch(function (error) {
+                    browserHistory.push('/');
+                });
+        } else {
+            browserHistory.push('/');
+        }
     }
 
     loadData() {

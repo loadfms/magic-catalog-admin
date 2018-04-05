@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import Cookies from 'universal-cookie';
 import Menu from './../components/menu/index';
 import Login from './../components/login/index';
+import axios from 'axios';
+var env = require('./../configs/env.json');
+var config = require('./../configs/config.' + env.current + '.json');
 
 class Home extends Component {
     constructor(props) {
@@ -19,9 +22,17 @@ class Home extends Component {
 
     checkCookie() {
         const cookies = new Cookies();
-        if (cookies.get('user') == "valiadmin") {
-            this.setState({ logged: true });
-        }
+        let hash = cookies.get('user');
+        let _this = this;
+
+        axios.post(config.serveraddress + '/checklogin', { hash: hash })
+            .then(function (response) {
+                _this.setState({ logged: true });
+                cookies.set("loggedin", true, { path: '/' });
+            }.bind(this))
+            .catch(function (error) {
+                _this.setState({ logged: false });
+            });
     }
 
     render() {
